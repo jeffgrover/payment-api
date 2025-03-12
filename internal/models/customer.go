@@ -7,7 +7,7 @@ import (
 // Customer represents a customer in the payment system
 type Customer struct {
 	ID        string    `json:"id" gorm:"primaryKey" example:"cus_123456789" description:"Unique identifier for the customer"`
-	Email     string    `json:"email" gorm:"uniqueIndex" example:"user@example.com" description:"Email address of the customer"`
+	Email     string    `json:"email" example:"user@example.com" description:"Email address of the customer"`
 	Name      string    `json:"name" example:"John Doe" description:"Customer's full name"`
 	CreatedAt time.Time `json:"created_at" example:"2023-01-01T12:00:00Z" description:"Time at which the customer was created"`
 	UpdatedAt time.Time `json:"updated_at" example:"2023-01-01T12:00:00Z" description:"Time at which the customer was last updated"`

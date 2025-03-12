@@ -50,8 +50,11 @@ func migrate(db *gorm.DB) error {
 
 // CreateCustomer creates a new customer
 func (db *DB) CreateCustomer(customer *models.Customer) error {
+	// Set timestamps
 	customer.CreatedAt = time.Now()
 	customer.UpdatedAt = time.Now()
+
+	// Create the customer
 	return db.Create(customer).Error
 }
 

@@ -85,20 +85,25 @@ payment-api/
 ├── internal/
 │   ├── api/
 │   │   ├── api.go          # API setup and configuration
+│   │   ├── api_test.go     # API unit tests
 │   │   ├── customers.go    # Customer endpoints
 │   │   ├── payments.go     # Payment endpoints
 │   │   ├── methods.go      # Payment method endpoints
 │   │   └── refunds.go      # Refund endpoints
 │   ├── models/
 │   │   ├── customer.go     # Customer model
+│   │   ├── customer_test.go # Customer model unit tests
 │   │   ├── payment.go      # Payment model
 │   │   ├── method.go       # Payment method model
 │   │   └── refund.go       # Refund model
 │   └── db/
-│       └── db.go           # Database setup and operations
+│       ├── db.go           # Database setup and operations
+│       └── db_test.go      # Database unit tests
 ├── payments.db             # SQLite database file (created at runtime)
 ├── go.mod                  # Go module definition
 ├── go.sum                  # Go module checksums
+├── run.sh                  # Convenience script for running the application
+├── e2e_test.sh             # End-to-end test script
 └── README.md               # This documentation
 ```
 
@@ -123,6 +128,18 @@ go mod tidy
 ```
 
 3. **Run the Application**
+
+You can use the provided shell script for convenience:
+
+```bash
+# Make the script executable (if needed)
+chmod +x run.sh
+
+# Run the application
+./run.sh server
+```
+
+Or run it directly with Go:
 
 ```bash
 go run cmd/server/main.go
@@ -203,6 +220,36 @@ curl -X POST http://localhost:8080/v1/payments \
 
 ## Development
 
+### Using the Run Script
+
+The `run.sh` script provides several commands to make development easier:
+
+```bash
+# Run the application
+./run.sh server
+
+# Build the application
+./run.sh build
+
+# Run unit tests
+./run.sh test
+
+# Run end-to-end tests (handles setup/teardown automatically)
+./run.sh e2e
+
+# Reset the database (delete payments.db)
+./run.sh reset-db
+
+# Clean build artifacts
+./run.sh clean
+
+# Run with hot reload (using Air)
+./run.sh dev
+
+# Show help
+./run.sh help
+```
+
 ### Auto-Reloading During Development
 
 For a better development experience, you can use [Air](https://github.com/cosmtrek/air) for hot reloading:
@@ -211,21 +258,77 @@ For a better development experience, you can use [Air](https://github.com/cosmtr
 # Install Air
 go install github.com/cosmtrek/air@latest
 
-# Run with Air
+# Run with Air directly
 air
+
+# Or use the run script
+./run.sh dev
 ```
 
 ### Building for Production
 
 ```bash
+# Using the run script
+./run.sh build
+
+# Or directly with Go
 go build -o payment-api ./cmd/server
 ```
 
-### Running Tests
+### Testing
+
+The project includes both unit tests and end-to-end tests.
+
+#### Running Unit Tests
+
+Unit tests cover the core functionality of the API, models, and database operations:
 
 ```bash
+# Using the run script
+./run.sh test
+
+# Or directly with Go
 go test ./...
 ```
+
+#### Running End-to-End Tests
+
+The end-to-end tests simulate a complete user flow, from creating a customer to processing a refund:
+
+```bash
+# Using the run script
+./run.sh e2e
+
+# Or directly
+./e2e_test.sh
+```
+
+The e2e test script will:
+1. Automatically handle setup and teardown:
+   - Stop any running server
+   - Reset the database
+   - Start a new server instance
+   - Run the tests
+   - Stop the server when done
+
+2. Test the complete payment workflow:
+   - Create a customer
+   - Create a payment method
+   - Create a payment
+   - Process a refund
+   - Verify each step with GET requests
+
+This provides a comprehensive test of the entire API workflow without requiring a test framework.
+
+#### Resetting the Database
+
+If you need to start with a clean database manually, you can use the reset-db command:
+
+```bash
+./run.sh reset-db
+```
+
+This will delete the payments.db file, which will be recreated the next time you start the application.
 
 ## Future Enhancements
 
